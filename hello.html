@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Example</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+    [v-cloak] {
+      display: none;
+    }
+  </style>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body>
+
+  <div id="app">
+    <div class="container">
+      <form v-if="!submitted" class="mt-5">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" v-model="email" class="form-control form-control-lg">
+        </div>
+        <button type="submit" @click.prevent="process" class="btn btn-primary">Submit</button>
+      </form>
+      <div v-else v-cloak class="mt-5">
+        <h2>Thank you for submitting!</h2>
+      </div>
+      <div v-show="submitted" v-cloak class="mt-5">
+        <img :src="imgSrc" :title="imgTitle" alt="Nasa Picture of the Day">
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        email: 'steve@example.com',
+        submitted: false,
+        imgSrc: '',
+        imgTitle: ''
+      },
+      methods: {
+        process: function () {
+          vm.getPicture();
+          this.submitted = true;
+        },
+        getPicture: function () {
+          const nasaApiKey = "lYsLR6zw6FQhK0N1xDFtD46pmqBeuG0lwpPdHSAU"
+          let url = `https://api.nasa.gov/planetary/apod?api_key=${nasaApiKey}`;
+          axios.get(url)
+            .then(function (res) {
+              // handle success
+              vm.imgSrc = res.data.url;
+              vm.imgTitle = res.data.title;
+            })
+            .catch(function (error) {
+              // handle error
+              console.log(error);
+            })
+        }
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>
