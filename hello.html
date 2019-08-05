@@ -30,10 +30,37 @@
       </form>
       <div v-else v-cloak class="mt-5">
         <h2>Thank you for submitting!</h2>
+        <div class="card mt-5">
+          <h2 class="card-header">Near-Earth Objects</h2>
+          <table class='table'>
+            <thead class='thead-light'>
+              <th>#</th>
+              <th>Name</th>
+              <th>Close Approach Date</th>
+              <th>Miss distance</th>
+              <th>Remove</th>
+            </thead>
+            <tbody v-cloak>
+              <tr v-for="(a, index) in asteroids" :key="a.neo_reference_id">
+                <td>{{index + 1}}</td>
+                <td>{{a.name}}</td>
+                <td>{{getCloseApproachDate(a)}}</td>
+                <td>
+                  <ul v-if="a.close_approach_data.length > 0">
+                    <li v-for="(value, key, index) in a.close_approach_data[0].miss_distance">
+                      {{key}}: {{value}}
+                    </li>
+                  </ul>
+                </td>
+                <td>
+                  <button @click="remove(index)" class="btn btn-warning">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div v-show="submitted" v-cloak class="mt-5">
-        <img :src="imgSrc" :title="imgTitle" alt="Nasa Picture of the Day">
-      </div>
+
     </div>
   </div>
 
@@ -44,27 +71,34 @@
       data: {
         email: 'steve@example.com',
         submitted: false,
-        imgSrc: '',
-        imgTitle: ''
+        asteroids: []
       },
       methods: {
+        getCloseApproachDate(a) {
+          if (a.close_approach_data.length > 0) {
+            return a.close_approach_data[0].close_approach_date
+          }
+          return 'N/A';
+        },
         process: function () {
-          vm.getPicture();
+          vm.getAsteroid();
           this.submitted = true;
         },
-        getPicture: function () {
+        getAsteroid: function () {
           const nasaApiKey = "lYsLR6zw6FQhK0N1xDFtD46pmqBeuG0lwpPdHSAU"
-          let url = `https://api.nasa.gov/planetary/apod?api_key=${nasaApiKey}`;
+          let url = `https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=${nasaApiKey}`;
           axios.get(url)
             .then(function (res) {
               // handle success
-              vm.imgSrc = res.data.url;
-              vm.imgTitle = res.data.title;
+              vm.asteroids = res.data.near_earth_objects.slice(0, 10);
             })
             .catch(function (error) {
               // handle error
               console.log(error);
             })
+        },
+        remove: function (index) {
+          this.asteroids.splice(index, 1);
         }
       }
     });
