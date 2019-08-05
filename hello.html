@@ -32,6 +32,10 @@
         <h2>Thank you for submitting!</h2>
         <div class="card mt-5">
           <h2 class="card-header">Near-Earth Objects</h2>
+          <div class="m-3" v-cloak v-if="numAsteroids > 0">
+            <p>showing {{numAsteroids}} items</p>
+            <p>{{closest}} passed the closest to Earth</p>
+          </div>
           <table class='table'>
             <thead class='thead-light'>
               <th>#</th>
@@ -72,6 +76,23 @@
         email: 'steve@example.com',
         submitted: false,
         asteroids: []
+      },
+      computed: {
+        numAsteroids: function () {
+          return this.asteroids.length;
+        },
+        closest: function () {
+          let neosHavingData = this.asteroids.filter(function (neo) {
+            return neo.close_approach_data.length > 0;
+          });
+          let simpleNeos = neosHavingData.map(function (neo) {
+            return { name: neo.name, miles: neo.close_approach_data[0].miss_distance.miles };
+          });
+          let sortedNeos = simpleNeos.sort(function (a, b) {
+            return a.miles - b.miles;
+          });
+          return sortedNeos[0].name;
+        }
       },
       methods: {
         getCloseApproachDate(a) {
