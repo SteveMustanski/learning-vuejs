@@ -91,7 +91,7 @@
           let sortedNeos = simpleNeos.sort(function (a, b) {
             return a.miles - b.miles;
           });
-          return sortedNeos[0].name;
+          return sortedNeos.length > 0 ? sortedNeos[0].name : 'Data not available to calculate which object ';
         }
       },
       methods: {
