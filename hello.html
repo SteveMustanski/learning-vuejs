@@ -16,6 +16,17 @@
     .highlight {
       border: solid 3px red;
     }
+
+    .shooting-star-leave-to,
+    .shooting-star-enter {
+      transform: translateX(150px) rotate(30deg);
+      opacity: 0;
+    }
+
+    .shooting-star-enter-active,
+    .shooting-star-leave-active {
+      transition: all .5s ease;
+    }
   </style>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
@@ -36,9 +47,14 @@
         <h2>Thank you for submitting!</h2>
         <div class="card mt-5">
           <h2 class="card-header">Near-Earth Objects</h2>
-          <div class="m-3" v-cloak v-if="numAsteroids > 0">
-            <p>showing {{numAsteroids}} items</p>
-            <p>{{closest}} passed the closest to Earth</p>
+          <transition name="shooting-star">
+            <div class="m-3" v-cloak v-if="numAsteroids > 0 && showSummary">
+              <p>showing {{numAsteroids}} items</p>
+              <p>{{closest}} passed the closest to Earth</p>
+            </div>
+          </transition>
+          <div class="m-3">
+            <a href="#" @click="showSummary = !showSummary">Show/hide summary</a>
           </div>
           <table class='table table-striped'>
             <thead class='thead-light'>
@@ -79,7 +95,8 @@
       data: {
         email: 'steve@example.com',
         submitted: false,
-        asteroids: []
+        asteroids: [],
+        showSummary: true
       },
       computed: {
         numAsteroids: function () {
